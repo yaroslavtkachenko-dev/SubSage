@@ -1,0 +1,60 @@
+/* Tabs */
+"subscriptions" = "Subscriptions";
+"analytics" = "Analytics";
+"account" = "Account";
+
+/* Common Titles */
+"my_subscriptions" = "My Subscriptions";
+"archive" = "Archive";
+"information" = "Information";
+"status" = "Status";
+
+/* Buttons & Actions */
+"save" = "Save";
+"cancel" = "Cancel";
+"choose" = "Choose";
+"done" = "Done";
+"delete" = "Delete";
+"archive_action" = "Archive";
+
+/* Add/Edit View */
+"new_subscription" = "New Subscription";
+"edit_subscription" = "Edit Subscription";
+"icon_section_title" = "Icon";
+"icon_appearance" = "Icon Appearance";
+"subscription_info" = "Subscription Information";
+"name_placeholder" = "Name (e.g., Spotify)";
+"price" = "Price";
+"category" = "Category";
+"payment_details" = "Payment Details";
+"next_payment" = "Next Payment";
+"frequency" = "Frequency";
+"active_subscription" = "Active Subscription";
+
+/* Analytics View */
+"monthly_spend" = "MONTHLY SPEND";
+"spending_by_category" = "Spending by Category";
+"spending_by_subscription" = "Spending by Subscription";
+"add_subscription_to_see_analytics" = "Add a subscription to see analytics";
+
+/* Icon Picker */
+"icon_settings" = "Icon Settings";
+"choose_icon" = "Choose Icon";
+"choose_color" = "Choose Color";
+
+/* Account View */
+"my_data" = "My Data";
+"settings" = "Settings";
+"app_version" = "App Version: 1.0";
+"notifications_status" = "Notifications: On";
+"privacy_policy" = "Privacy Policy";
+"terms_conditions" = "Terms & Conditions";
+"add_item_action" = "Add Subscription";
+
+/* Billing Cycles */
+"monthly" = "Monthly";
+"yearly" = "Yearly";
+"weekly" = "Weekly";
+"quarterly" = "Quarterly";
+"currency" = "Currency";
+"search_subscriptions_placeholder" = "Search subscriptions...";

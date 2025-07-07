@@ -1,88 +1,107 @@
-//
-//  ContentView.swift
-//  SubSage
-//
-//  Created by Yaroslav Tkachenko on 05.07.2025.
-//
-
 import SwiftUI
 import CoreData
 
 struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
-
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
-                    }
+        TabView {
+            SubscriptionsListView()
+                .tabItem {
+                    Label("subscriptions", systemImage: "list.bullet")
                 }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-#if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
+            AnalyticsView()
+                .tabItem {
+                    Label("analytics", systemImage: "chart.pie.fill")
                 }
-#endif
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+            AccountView()
+                .tabItem {
+                    Label("account", systemImage: "person.crop.circle")
                 }
-            }
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
         }
     }
 }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
+struct SubscriptionsListView: View {
+    @Environment(\.managedObjectContext) private var viewContext
 
-#Preview {
-    ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \SubscriptionEntity.createdAt, ascending: false)],
+        predicate: NSPredicate(format: "isActive == YES"),
+        animation: .default)
+    private var subscriptions: FetchedResults<SubscriptionEntity>
+
+    @State private var showingAddView = false
+    @State private var searchText = ""
+
+    var body: some View {
+        NavigationView {
+            List {
+                ForEach(subscriptions) { subscriptionEntity in
+                    NavigationLink {
+                        EditSubscriptionView(subscription: subscriptionEntity)
+                    } label: {
+                        SubscriptionCardView(subscription: subscriptionEntity.toSubscription())
+                    }
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowSeparator(.hidden)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button(role: .destructive) {
+                            deleteSubscription(subscriptionEntity)
+                        } label: {
+                            Label("delete", systemImage: "trash.fill")
+                        }
+                        
+                        Button {
+                            archiveSubscription(subscriptionEntity)
+                        } label: {
+                            Label("archive_action", systemImage: "archivebox.fill")
+                        }
+                        .tint(.blue)
+                    }
+                }
+            }
+            .listStyle(.plain)
+            .navigationTitle("my_subscriptions")
+            .searchable(text: $searchText, prompt: Text("search_subscriptions_placeholder"))
+            .onChange(of: searchText) {
+                if searchText.isEmpty {
+                    subscriptions.nsPredicate = NSPredicate(format: "isActive == YES")
+                } else {
+                    subscriptions.nsPredicate = NSPredicate(format: "name CONTAINS[c] %@ AND isActive == YES", searchText)
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button { showingAddView = true } label: { Label("add_item_action", systemImage: "plus") }
+                }
+            }
+            .sheet(isPresented: $showingAddView) {
+                AddSubscriptionView().environment(\.managedObjectContext, self.viewContext)
+            }
+        }
+    }
+
+    private func archiveSubscription(_ subscription: SubscriptionEntity) {
+        withAnimation {
+            subscription.isActive = false
+            subscription.updatedAt = Date()
+            try? viewContext.save()
+        }
+    }
+    
+    private func deleteSubscription(_ subscription: SubscriptionEntity) {
+        withAnimation {
+            if let id = subscription.id?.uuidString {
+                NotificationManager.shared.cancelNotification(forSubscriptionID: id)
+            }
+            viewContext.delete(subscription)
+            try? viewContext.save()
+        }
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+            .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    }
 }

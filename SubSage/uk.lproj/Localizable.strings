@@ -1,0 +1,67 @@
+/* Tabs */
+"subscriptions" = "Підписки";
+"analytics" = "Аналітика";
+"account" = "Акаунт";
+
+/* Common Titles */
+"my_subscriptions" = "Мої підписки";
+"archive" = "Архів";
+"information" = "Інформація";
+"status" = "Статус";
+
+/* Buttons & Actions */
+"save" = "Зберегти";
+"cancel" = "Скасувати";
+"choose" = "Обрати";
+"done" = "Готово";
+"delete" = "Видалити";
+"archive_action" = "Архівувати";
+"add_item_action" = "Додати підписку";
+
+/* Add/Edit View */
+"new_subscription" = "Нова підписка";
+"edit_subscription" = "Редагувати підписку";
+"icon_section_title" = "Іконка";
+"icon_appearance" = "Вигляд іконки";
+"subscription_info" = "Інформація про підписку";
+"name_placeholder" = "Назва (напр., Spotify)";
+"price" = "Ціна";
+"category" = "Категорія";
+"payment_details" = "Дані оплати";
+"next_payment" = "Наступна оплата";
+"frequency" = "Періодичність";
+"active_subscription" = "Активна підписка";
+
+/* Analytics View */
+"monthly_spend" = "ВИТРАТИ НА МІСЯЦЬ";
+"spending_by_category" = "Витрати по категоріях";
+"spending_by_subscription" = "Витрати по підписках";
+"add_subscription_to_see_analytics" = "Додайте підписку, щоб побачити аналітику";
+
+/* Icon Picker */
+"icon_settings" = "Налаштування іконки";
+"choose_icon" = "Виберіть іконку";
+"choose_color" = "Виберіть колір";
+
+/* Account View */
+"my_data" = "Мої дані";
+"settings" = "Налаштування";
+"app_version" = "Версія застосунку: 1.0";
+"notifications_status" = "Сповіщення: увімкнені";
+"privacy_policy" = "Політика конфіденційності";
+"terms_conditions" = "Правила та умови";
+
+/* Billing Cycles */
+"monthly" = "Щомісяця";
+"yearly" = "Щороку";
+"weekly" = "Щотижня";
+"quarterly" = "Щокварталу";
+
+/* Categories */
+"entertainment" = "Розваги";
+"work" = "Робота";
+"cloud" = "Хмарні сервіси";
+"education" = "Навчання";
+"other" = "Інше";
+"currency" = "Валюта";
+"search_subscriptions_placeholder" = "Пошук підписок...";
