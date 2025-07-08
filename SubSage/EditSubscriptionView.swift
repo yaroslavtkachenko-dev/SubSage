@@ -10,7 +10,7 @@ struct EditSubscriptionView: View {
     @State private var name: String
     @State private var price: String
     @State private var nextBillingDate: Date
-    @State private var selectedCategory: SubscriptionCategory // <--- Тип змінено на enum
+    @State private var selectedCategory: SubscriptionCategory
     @State private var billingCycle: BillingCycle
     @State private var selectedIcon: String
     @State private var selectedColor: String
@@ -18,7 +18,6 @@ struct EditSubscriptionView: View {
     @State private var selectedCurrency: Currency
     @State private var isActive: Bool
 
-    // Ініціалізатор, який правильно встановлює початкові значення
     init(subscription: SubscriptionEntity) {
         self.subscription = subscription
         _name = State(initialValue: subscription.name ?? "")
@@ -52,7 +51,13 @@ struct EditSubscriptionView: View {
                     TextField("price", text: $price)
                         .keyboardType(.decimalPad)
                     
-                    // ВИПРАВЛЕНИЙ PICKER ДЛЯ КАТЕГОРІЙ
+                    // ДОДАНО PICKER ДЛЯ ВАЛЮТИ
+                    Picker("currency", selection: $selectedCurrency) {
+                        ForEach(Currency.allCases) { currency in
+                            Text(currency.rawValue).tag(currency)
+                        }
+                    }
+
                     Picker("category", selection: $selectedCategory) {
                         ForEach(SubscriptionCategory.allCases, id: \.self) { category in
                             Text(category.localizedName).tag(category)
@@ -62,8 +67,6 @@ struct EditSubscriptionView: View {
                 
                 Section("payment_details") {
                     DatePicker("next_payment", selection: $nextBillingDate, displayedComponents: .date)
-                    
-                    // ВИПРАВЛЕНИЙ PICKER ДЛЯ ПЕРІОДИЧНОСТІ
                     Picker("frequency", selection: $billingCycle) {
                         ForEach(BillingCycle.allCases, id: \.self) { cycle in
                             Text(cycle.localizedName).tag(cycle)
@@ -98,7 +101,6 @@ struct EditSubscriptionView: View {
             subscription.price = Double(price.replacingOccurrences(of: ",", with: ".")) ?? 0
             subscription.currency = selectedCurrency.rawValue
             subscription.nextBilling = nextBillingDate
-            // Зберігаємо rawValue, тобто ключ
             subscription.category = selectedCategory.rawValue
             subscription.billingCycle = billingCycle.rawValue
             subscription.iconName = selectedIcon

@@ -16,10 +16,15 @@ struct SubscriptionCardView: View {
                 Text(subscription.name)
                     .font(.headline)
                 
-                // ВИПРАВЛЕНО ТУТ
-                Text(subscription.category.localizedName)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                // Виправлено для локалізації
+                Text(
+                    String(
+                        format: NSLocalizedString("next_payment_due", comment: ""),
+                        subscription.nextPaymentDate.formatted(.relative(presentation: .named))
+                    )
+                )
+                .font(.caption)
+                .foregroundColor(.secondary)
             }
 
             Spacer()

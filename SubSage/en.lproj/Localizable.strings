@@ -16,6 +16,7 @@
 "done" = "Done";
 "delete" = "Delete";
 "archive_action" = "Archive";
+"add_item_action" = "Add Subscription";
 
 /* Add/Edit View */
 "new_subscription" = "New Subscription";
@@ -30,6 +31,8 @@
 "next_payment" = "Next Payment";
 "frequency" = "Frequency";
 "active_subscription" = "Active Subscription";
+"currency" = "Currency";
+"remind_me" = "Remind me";
 
 /* Analytics View */
 "monthly_spend" = "MONTHLY SPEND";
@@ -49,12 +52,26 @@
 "notifications_status" = "Notifications: On";
 "privacy_policy" = "Privacy Policy";
 "terms_conditions" = "Terms & Conditions";
-"add_item_action" = "Add Subscription";
+
+/* Placeholders */
+"search_subscriptions_placeholder" = "Search subscriptions...";
+"next_payment_due" = "Next payment: %@";
 
 /* Billing Cycles */
 "monthly" = "Monthly";
 "yearly" = "Yearly";
 "weekly" = "Weekly";
 "quarterly" = "Quarterly";
-"currency" = "Currency";
-"search_subscriptions_placeholder" = "Search subscriptions...";
+
+/* Categories */
+"entertainment" = "Entertainment";
+"work" = "Work";
+"cloud" = "Cloud Services";
+"education" = "Education";
+"other" = "Other";
+
+/* Notification Options */
+"oneDay" = "1 day before";
+"twoDays" = "2 days before";
+"fiveDays" = "5 days before";
+"oneWeek" = "1 week before";

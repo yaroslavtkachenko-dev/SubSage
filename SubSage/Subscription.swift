@@ -13,12 +13,23 @@ enum Currency: String, CaseIterable, Identifiable {
     case uah = "UAH"
     case gbp = "GBP"
     var id: String { self.rawValue }
+    
     var symbol: String {
         switch self {
         case .usd: return "$"
         case .eur: return "€"
         case .uah: return "₴"
         case .gbp: return "£"
+        }
+    }
+    
+    // Нова властивість з приблизними курсами
+    var rateComparedToUSD: Double {
+        switch self {
+        case .usd: return 1.0
+        case .eur: return 1.08 // 1 EUR = 1.08 USD
+        case .uah: return 0.025 // 1 UAH = 0.025 USD
+        case .gbp: return 1.27 // 1 GBP = 1.27 USD
         }
     }
 }
@@ -54,7 +65,7 @@ struct Subscription: Identifiable {
         default: return .blue
         }
     }
-    
+
     static var example: Subscription {
         Subscription(
             id: UUID(), name: "Apple Music", price: 4.99, currency: .usd,
@@ -88,18 +99,28 @@ extension SubscriptionEntity {
         )
     }
     
+    // Оновлена функція з конвертацією
     func monthlyEquivalentPrice() -> Double {
+        let currency = Currency(rawValue: self.currency ?? "USD") ?? .usd
+        let priceInUSD = self.price * currency.rateComparedToUSD
+        
         switch BillingCycle(rawValue: self.billingCycle ?? "monthly") {
         case .monthly:
-            return self.price
+            return priceInUSD
         case .yearly:
-            return self.price / 12
+            return priceInUSD / 12
         case .quarterly:
-            return self.price / 3
+            return priceInUSD / 3
         case .weekly:
-            return self.price * 4
+            return priceInUSD * 4
         default:
             return 0
         }
     }
 }
+
+
+
+
+
+

@@ -1,20 +1,40 @@
 import SwiftUI
 
+// Цей enum можна залишити тут або винести в окремий файл
+enum NotificationOption: String, CaseIterable, Identifiable {
+    case oneDay, twoDays, fiveDays, oneWeek
+
+    var id: String { self.rawValue }
+
+    var localizedName: LocalizedStringKey {
+        LocalizedStringKey(self.rawValue)
+    }
+    
+    // Повертає кількість днів як число
+    var dayValue: Int16 {
+        switch self {
+        case .oneDay: return 1
+        case .twoDays: return 2
+        case .fiveDays: return 5
+        case .oneWeek: return 7
+        }
+    }
+}
+
 struct AddSubscriptionView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) var dismiss
 
-    // Змінюємо State, щоб працювати з enum, а не з рядками
     @State private var name = ""
     @State private var price = ""
     @State private var nextBillingDate = Date()
     @State private var billingCycle: BillingCycle = .monthly
     @State private var selectedCategory: SubscriptionCategory = .other
-    
     @State private var selectedIcon = "dollarsign.circle.fill"
     @State private var selectedColor = "blue"
     @State private var showingIconPicker = false
     @State private var selectedCurrency: Currency = .usd
+    @State private var notificationOption: NotificationOption = .twoDays
 
     var body: some View {
         NavigationView {
@@ -33,20 +53,18 @@ struct AddSubscriptionView: View {
 
                 Section("subscription_info") {
                     TextField("name_placeholder", text: $name)
-                    
                     TextField("price", text: $price)
                         .keyboardType(.decimalPad)
-
+                    
+                    // ВИПРАВЛЕНО: Picker для валюти
                     Picker("currency", selection: $selectedCurrency) {
                         ForEach(Currency.allCases) { currency in
                             Text(currency.rawValue).tag(currency)
                         }
                     }
                     
-                    // Виправлений Picker для Категорій
                     Picker("category", selection: $selectedCategory) {
                         ForEach(SubscriptionCategory.allCases, id: \.self) { category in
-                            // Використовуємо .localizedName для відображення перекладу
                             Text(category.localizedName).tag(category)
                         }
                     }
@@ -54,9 +72,17 @@ struct AddSubscriptionView: View {
 
                 Section("payment_details") {
                     DatePicker("next_payment", selection: $nextBillingDate, displayedComponents: .date)
+                    
+                    // ВИПРАВЛЕНО: Picker для періодичності
                     Picker("frequency", selection: $billingCycle) {
                         ForEach(BillingCycle.allCases, id: \.self) { cycle in
                             Text(cycle.localizedName).tag(cycle)
+                        }
+                    }
+                    
+                    Picker("remind_me", selection: $notificationOption) {
+                        ForEach(NotificationOption.allCases) { option in
+                            Text(option.localizedName).tag(option)
                         }
                     }
                 }
@@ -92,11 +118,13 @@ struct AddSubscriptionView: View {
             newSubscription.price = Double(price.replacingOccurrences(of: ",", with: ".")) ?? 0
             newSubscription.currency = selectedCurrency.rawValue
             newSubscription.nextBilling = nextBillingDate
-            // Зберігаємо rawValue, тобто ключ
             newSubscription.billingCycle = billingCycle.rawValue
             newSubscription.category = selectedCategory.rawValue
             newSubscription.iconName = selectedIcon
             newSubscription.iconColor = selectedColor
+            
+            // ВИПРАВЛЕНО: Зберігаємо значення з enum
+            newSubscription.notificationOffset = -notificationOption.dayValue
             
             NotificationManager.shared.scheduleNotification(for: newSubscription)
             

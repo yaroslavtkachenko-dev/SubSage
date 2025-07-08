@@ -31,6 +31,8 @@
 "next_payment" = "Наступна оплата";
 "frequency" = "Періодичність";
 "active_subscription" = "Активна підписка";
+"currency" = "Валюта";
+"remind_me" = "Нагадати";
 
 /* Analytics View */
 "monthly_spend" = "ВИТРАТИ НА МІСЯЦЬ";
@@ -51,6 +53,10 @@
 "privacy_policy" = "Політика конфіденційності";
 "terms_conditions" = "Правила та умови";
 
+/* Placeholders */
+"search_subscriptions_placeholder" = "Пошук підписок...";
+"next_payment_due" = "Наступна оплата: %@";
+
 /* Billing Cycles */
 "monthly" = "Щомісяця";
 "yearly" = "Щороку";
@@ -63,5 +69,9 @@
 "cloud" = "Хмарні сервіси";
 "education" = "Навчання";
 "other" = "Інше";
-"currency" = "Валюта";
-"search_subscriptions_placeholder" = "Пошук підписок...";
+
+/* Notification Options */
+"oneDay" = "За 1 день";
+"twoDays" = "За 2 дні";
+"fiveDays" = "За 5 днів";
+"oneWeek" = "За тиждень";
