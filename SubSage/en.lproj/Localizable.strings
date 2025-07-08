@@ -48,7 +48,7 @@
 /* Account View */
 "my_data" = "My Data";
 "settings" = "Settings";
-"app_version" = "App Version: 1.0";
+"app_version_title" = "Version";
 "notifications_status" = "Notifications: On";
 "privacy_policy" = "Privacy Policy";
 "terms_conditions" = "Terms & Conditions";

@@ -1,28 +1,50 @@
 import SwiftUI
 
 struct AccountView: View {
+    private var appVersion: String {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "N/A"
+    }
+
+    @State private var notificationsEnabled = true
+
     var body: some View {
         NavigationView {
-            Form {
-                Section("my_data") { // Ключ для "Мої дані"
+            List {
+                Section {
                     NavigationLink {
                         ArchivedSubscriptionsView()
                     } label: {
-                        Text("archive") // Ключ для "Архів підписок"
+                        Label("archive", systemImage: "archivebox.fill")
                     }
+                } header: {
+                    Text("my_data")
                 }
-                
-                Section("settings") { // Ключ для "Налаштування"
-                    Text("app_version") // Ключ для "Версія застосунку: 1.0"
-                    Text("notifications_status") // Ключ для "Сповіщення: вимкнені"
+
+                Section {
+                    
+                    HStack {
+                        Label("app_version_title", systemImage: "info.circle.fill")
+                        Spacer()
+                        Text(appVersion)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Toggle(isOn: $notificationsEnabled) {
+                        Label("notifications_status", systemImage: "bell.fill")
+                    }
+                } header: {
+                    Text("settings")
                 }
-                
-                Section("information") { // Ключ для "Інформація"
-                    Text("privacy_policy") // Ключ для "Політика конфіденційності"
-                    Text("terms_conditions") // Ключ для "Правила та умови"
+
+                Section {
+                    Label("privacy_policy", systemImage: "lock.shield.fill")
+                    Label("terms_conditions", systemImage: "doc.text.fill")
+                } header: {
+                    Text("information")
                 }
             }
-            .navigationTitle("account") // Ключ для "Акаунт"
+            .navigationTitle("account")
+            .listStyle(InsetGroupedListStyle())
         }
     }
 }

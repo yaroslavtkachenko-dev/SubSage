@@ -48,7 +48,7 @@
 /* Account View */
 "my_data" = "Мої дані";
 "settings" = "Налаштування";
-"app_version" = "Версія застосунку: 1.0";
+"app_version_title" = "Версія";
 "notifications_status" = "Сповіщення: увімкнені";
 "privacy_policy" = "Політика конфіденційності";
 "terms_conditions" = "Правила та умови";
