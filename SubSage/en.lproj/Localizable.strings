@@ -49,7 +49,8 @@
 "my_data" = "My Data";
 "settings" = "Settings";
 "app_version_title" = "Version";
-"notifications_status" = "Notifications: On";
+"notifications_on" = "Notifications: On";
+"notifications_off" = "Notifications: Off";
 "privacy_policy" = "Privacy Policy";
 "terms_conditions" = "Terms & Conditions";
 

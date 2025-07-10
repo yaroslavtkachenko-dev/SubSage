@@ -49,7 +49,8 @@
 "my_data" = "Мої дані";
 "settings" = "Налаштування";
 "app_version_title" = "Версія";
-"notifications_status" = "Сповіщення: увімкнені";
+"notifications_on" = "Сповіщення: увімкнені";
+"notifications_off" = "Сповіщення: вимкнені";
 "privacy_policy" = "Політика конфіденційності";
 "terms_conditions" = "Правила та умови";
 

@@ -21,7 +21,6 @@ struct AccountView: View {
                 }
 
                 Section {
-                    
                     HStack {
                         Label("app_version_title", systemImage: "info.circle.fill")
                         Spacer()
@@ -29,8 +28,12 @@ struct AccountView: View {
                             .foregroundColor(.secondary)
                     }
                     
+                    // ВИПРАВЛЕНО ТУТ
                     Toggle(isOn: $notificationsEnabled) {
-                        Label("notifications_status", systemImage: "bell.fill")
+                        Label(
+                            notificationsEnabled ? "notifications_on" : "notifications_off",
+                            systemImage: "bell.fill"
+                        )
                     }
                 } header: {
                     Text("settings")
