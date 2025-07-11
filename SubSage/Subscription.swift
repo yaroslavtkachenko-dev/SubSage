@@ -40,6 +40,31 @@ enum SubscriptionCategory: String, CaseIterable, Identifiable {
     var localizedName: LocalizedStringKey { LocalizedStringKey(self.rawValue) }
 }
 
+enum IconColor: String, CaseIterable, Identifiable {
+    case red, orange, yellow, green, teal, mint, cyan, blue, indigo, purple, pink, brown, gray
+    
+    var id: String { self.rawValue }
+    
+    // Властивість, що повертає сам колір
+    var color: Color {
+        switch self {
+        case .red: return .red
+        case .orange: return .orange
+        case .yellow: return .yellow
+        case .green: return .green
+        case .teal: return .teal
+        case .mint: return .mint
+        case .cyan: return .cyan
+        case .blue: return .blue
+        case .indigo: return .indigo
+        case .purple: return .purple
+        case .pink: return .pink
+        case .brown: return .brown
+        case .gray: return .gray
+        }
+    }
+}
+
 struct Subscription: Identifiable {
     let id: UUID
     var name: String
@@ -50,27 +75,15 @@ struct Subscription: Identifiable {
     var notes: String?
     var iconName: String?
     var category: SubscriptionCategory
-    var iconColor: String?
-    
-    func getIconColor() -> Color {
-        switch self.iconColor ?? "blue" {
-        case "red": return .red
-        case "orange": return .orange
-        case "yellow": return .yellow
-        case "green": return .green
-        case "blue": return .blue
-        case "purple": return .purple
-        case "pink": return .pink
-        case "gray": return .gray
-        default: return .blue
-        }
-    }
+    var iconColor: IconColor? // <--- Змінено тип на enum IconColor
 
+    // Стара функція getIconColor() більше не потрібна
+    
     static var example: Subscription {
         Subscription(
             id: UUID(), name: "Apple Music", price: 4.99, currency: .usd,
             nextPaymentDate: Date(), billingCycle: .monthly,
-            iconName: "music.note", category: .entertainment, iconColor: "red"
+            iconName: "music.note", category: .entertainment, iconColor: .red // <--- Змінено
         )
     }
     
@@ -78,7 +91,7 @@ struct Subscription: Identifiable {
         Subscription(
             id: UUID(), name: "iCloud+", price: 2.99, currency: .usd,
             nextPaymentDate: Calendar.current.date(byAdding: .day, value: 5, to: Date())!,
-            billingCycle: .monthly, iconName: "icloud.fill", category: .work, iconColor: "blue"
+            billingCycle: .monthly, iconName: "icloud.fill", category: .work, iconColor: .blue // <--- Змінено
         )
     }
 }
@@ -95,10 +108,10 @@ extension SubscriptionEntity {
             notes: self.note,
             iconName: self.iconName,
             category: SubscriptionCategory(rawValue: self.category ?? "other") ?? .other,
-            iconColor: self.iconColor
+            iconColor: IconColor(rawValue: self.iconColor ?? "blue") // <--- Змінено
         )
     }
-    
+
     // Оновлена функція з конвертацією
     func monthlyEquivalentPrice() -> Double {
         let currency = Currency(rawValue: self.currency ?? "USD") ?? .usd

@@ -8,23 +8,19 @@ struct SubscriptionCardView: View {
             Image(systemName: subscription.iconName ?? "dollarsign.circle.fill")
                 .font(.title2)
                 .frame(width: 45, height: 45)
-                .background(subscription.getIconColor().opacity(0.2))
+                // Використовуємо нову властивість .color
+                .background((subscription.iconColor?.color ?? .blue).opacity(0.2))
                 .clipShape(Circle())
-                .foregroundColor(subscription.getIconColor())
+                // І тут також
+                .foregroundColor(subscription.iconColor?.color ?? .blue)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(subscription.name)
                     .font(.headline)
                 
-                // Виправлено для локалізації
-                Text(
-                    String(
-                        format: NSLocalizedString("next_payment_due", comment: ""),
-                        subscription.nextPaymentDate.formatted(.relative(presentation: .named))
-                    )
-                )
-                .font(.caption)
-                .foregroundColor(.secondary)
+                Text(subscription.category.localizedName)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
 
             Spacer()

@@ -5,7 +5,7 @@ struct EditSubscriptionView: View {
     @Environment(\.dismiss) var dismiss
     
     let subscription: SubscriptionEntity
-
+    
     // State змінні
     @State private var name: String
     @State private var price: String
@@ -17,7 +17,10 @@ struct EditSubscriptionView: View {
     @State private var showingIconPicker = false
     @State private var selectedCurrency: Currency
     @State private var isActive: Bool
-
+    @State private var notificationOption: NotificationOption
+    
+    @State private var showingSaveError = false
+    
     init(subscription: SubscriptionEntity) {
         self.subscription = subscription
         _name = State(initialValue: subscription.name ?? "")
@@ -29,8 +32,9 @@ struct EditSubscriptionView: View {
         _selectedColor = State(initialValue: subscription.iconColor ?? "blue")
         _selectedCurrency = State(initialValue: Currency(rawValue: subscription.currency ?? "USD") ?? .usd)
         _isActive = State(initialValue: subscription.isActive)
+        _notificationOption = State(initialValue: NotificationOption(rawValue: String(abs(subscription.notificationOffset))) ?? .twoDays)
     }
-
+    
     var body: some View {
         NavigationView {
             Form {
@@ -50,27 +54,21 @@ struct EditSubscriptionView: View {
                     TextField("name_placeholder", text: $name)
                     TextField("price", text: $price)
                         .keyboardType(.decimalPad)
-                    
-                    // ДОДАНО PICKER ДЛЯ ВАЛЮТИ
                     Picker("currency", selection: $selectedCurrency) {
-                        ForEach(Currency.allCases) { currency in
-                            Text(currency.rawValue).tag(currency)
-                        }
+                        ForEach(Currency.allCases) { Text($0.rawValue).tag($0) }
                     }
-
                     Picker("category", selection: $selectedCategory) {
-                        ForEach(SubscriptionCategory.allCases, id: \.self) { category in
-                            Text(category.localizedName).tag(category)
-                        }
+                        ForEach(SubscriptionCategory.allCases, id: \.self) { Text($0.localizedName).tag($0) }
                     }
                 }
                 
                 Section("payment_details") {
                     DatePicker("next_payment", selection: $nextBillingDate, displayedComponents: .date)
                     Picker("frequency", selection: $billingCycle) {
-                        ForEach(BillingCycle.allCases, id: \.self) { cycle in
-                            Text(cycle.localizedName).tag(cycle)
-                        }
+                        ForEach(BillingCycle.allCases, id: \.self) { Text($0.localizedName).tag($0) }
+                    }
+                    Picker("remind_me", selection: $notificationOption) {
+                        ForEach(NotificationOption.allCases) { Text($0.localizedName).tag($0) }
                     }
                 }
                 
@@ -81,24 +79,36 @@ struct EditSubscriptionView: View {
             .navigationTitle("edit_subscription")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("cancel") { dismiss() }
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("save") {
                         saveChanges()
-                        dismiss()
                     }
-                    .disabled(name.isEmpty)
+                    .disabled(name.isEmpty || price.isEmpty)
                 }
             }
             .sheet(isPresented: $showingIconPicker) {
                 IconPickerView(selectedIcon: $selectedIcon, selectedColor: $selectedColor)
             }
+            .alert("error_title", isPresented: $showingSaveError) {
+                Button("ok") {}
+            } message: {
+                Text("save_error_message")
+            }
         }
     }
     
     private func saveChanges() {
+        guard let priceDouble = Double(price.replacingOccurrences(of: ",", with: ".")), priceDouble > 0 else {
+            showingSaveError = true
+            return
+        }
+        
         withAnimation {
             subscription.name = name
-            subscription.price = Double(price.replacingOccurrences(of: ",", with: ".")) ?? 0
+            subscription.price = priceDouble
             subscription.currency = selectedCurrency.rawValue
             subscription.nextBilling = nextBillingDate
             subscription.category = selectedCategory.rawValue
@@ -107,18 +117,20 @@ struct EditSubscriptionView: View {
             subscription.iconColor = selectedColor
             subscription.updatedAt = Date()
             subscription.isActive = isActive
+            subscription.notificationOffset = -notificationOption.dayValue
             
             NotificationManager.shared.scheduleNotification(for: subscription)
             
             do {
                 try viewContext.save()
+                dismiss()
             } catch {
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                print("Error saving changes: \(error.localizedDescription)")
+                showingSaveError = true
             }
         }
     }
-
+    
     private func colorFromString(_ name: String) -> Color {
         switch name {
         case "red": return .red

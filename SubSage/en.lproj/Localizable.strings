@@ -76,3 +76,11 @@
 "twoDays" = "2 days before";
 "fiveDays" = "5 days before";
 "oneWeek" = "1 week before";
+
+/* Errors */
+"error_title" = "Error";
+"save_error_message" = "Failed to save data. Please try again.";
+"ok" = "OK";
+
+"archived_empty_state" = "Your archive is empty";
+"unarchive_action" = "Unarchive";

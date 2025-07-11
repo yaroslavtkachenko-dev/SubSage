@@ -1,16 +1,9 @@
 import SwiftUI
 
-// Цей enum можна залишити тут або винести в окремий файл
 enum NotificationOption: String, CaseIterable, Identifiable {
     case oneDay, twoDays, fiveDays, oneWeek
-
     var id: String { self.rawValue }
-
-    var localizedName: LocalizedStringKey {
-        LocalizedStringKey(self.rawValue)
-    }
-    
-    // Повертає кількість днів як число
+    var localizedName: LocalizedStringKey { LocalizedStringKey(self.rawValue) }
     var dayValue: Int16 {
         switch self {
         case .oneDay: return 1
@@ -35,6 +28,8 @@ struct AddSubscriptionView: View {
     @State private var showingIconPicker = false
     @State private var selectedCurrency: Currency = .usd
     @State private var notificationOption: NotificationOption = .twoDays
+    
+    @State private var showingSaveError = false
 
     var body: some View {
         NavigationView {
@@ -50,40 +45,24 @@ struct AddSubscriptionView: View {
                             .buttonStyle(.bordered)
                     }
                 }
-
                 Section("subscription_info") {
                     TextField("name_placeholder", text: $name)
                     TextField("price", text: $price)
                         .keyboardType(.decimalPad)
-                    
-                    // ВИПРАВЛЕНО: Picker для валюти
                     Picker("currency", selection: $selectedCurrency) {
-                        ForEach(Currency.allCases) { currency in
-                            Text(currency.rawValue).tag(currency)
-                        }
+                        ForEach(Currency.allCases) { Text($0.rawValue).tag($0) }
                     }
-                    
                     Picker("category", selection: $selectedCategory) {
-                        ForEach(SubscriptionCategory.allCases, id: \.self) { category in
-                            Text(category.localizedName).tag(category)
-                        }
+                        ForEach(SubscriptionCategory.allCases, id: \.self) { Text($0.localizedName).tag($0) }
                     }
                 }
-
                 Section("payment_details") {
                     DatePicker("next_payment", selection: $nextBillingDate, displayedComponents: .date)
-                    
-                    // ВИПРАВЛЕНО: Picker для періодичності
                     Picker("frequency", selection: $billingCycle) {
-                        ForEach(BillingCycle.allCases, id: \.self) { cycle in
-                            Text(cycle.localizedName).tag(cycle)
-                        }
+                        ForEach(BillingCycle.allCases, id: \.self) { Text($0.localizedName).tag($0) }
                     }
-                    
                     Picker("remind_me", selection: $notificationOption) {
-                        ForEach(NotificationOption.allCases) { option in
-                            Text(option.localizedName).tag(option)
-                        }
+                        ForEach(NotificationOption.allCases) { Text($0.localizedName).tag($0) }
                     }
                 }
             }
@@ -96,43 +75,51 @@ struct AddSubscriptionView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("save") {
                         saveSubscription()
-                        dismiss()
                     }
-                    .disabled(name.isEmpty)
+                    .disabled(name.isEmpty || price.isEmpty) // Кнопка неактивна, якщо назва або ціна порожні
                 }
             }
             .sheet(isPresented: $showingIconPicker) {
                 IconPickerView(selectedIcon: $selectedIcon, selectedColor: $selectedColor)
             }
+            .alert("error_title", isPresented: $showingSaveError) {
+                Button("ok") {}
+            } message: {
+                Text("save_error_message")
+            }
         }
     }
     
     private func saveSubscription() {
+        // Валідація ціни
+        guard let priceDouble = Double(price.replacingOccurrences(of: ",", with: ".")), priceDouble > 0 else {
+            showingSaveError = true
+            return
+        }
+
         withAnimation {
             let newSubscription = SubscriptionEntity(context: viewContext)
             newSubscription.id = UUID()
             newSubscription.createdAt = Date()
             newSubscription.updatedAt = Date()
-            
             newSubscription.name = name
-            newSubscription.price = Double(price.replacingOccurrences(of: ",", with: ".")) ?? 0
+            newSubscription.price = priceDouble // Використовуємо перевірене значення
             newSubscription.currency = selectedCurrency.rawValue
             newSubscription.nextBilling = nextBillingDate
             newSubscription.billingCycle = billingCycle.rawValue
             newSubscription.category = selectedCategory.rawValue
             newSubscription.iconName = selectedIcon
             newSubscription.iconColor = selectedColor
-            
-            // ВИПРАВЛЕНО: Зберігаємо значення з enum
             newSubscription.notificationOffset = -notificationOption.dayValue
             
             NotificationManager.shared.scheduleNotification(for: newSubscription)
             
             do {
                 try viewContext.save()
+                dismiss() // Закриваємо вікно тільки при успішному збереженні
             } catch {
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                print("Error saving subscription: \(error.localizedDescription)")
+                showingSaveError = true
             }
         }
     }

@@ -76,3 +76,11 @@
 "twoDays" = "За 2 дні";
 "fiveDays" = "За 5 днів";
 "oneWeek" = "За тиждень";
+
+/* Errors */
+"error_title" = "Помилка";
+"save_error_message" = "Не вдалося зберегти дані. Будь ласка, спробуйте ще раз.";
+"ok" = "OK";
+
+"archived_empty_state" = "Ваш архів порожній";
+"unarchive_action" = "Відновити";
