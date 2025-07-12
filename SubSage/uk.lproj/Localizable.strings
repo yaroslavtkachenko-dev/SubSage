@@ -84,3 +84,10 @@
 
 "archived_empty_state" = "Ваш архів порожній";
 "unarchive_action" = "Відновити";
+
+"delete_confirmation_title" = "Ви впевнені?";
+"delete_confirmation_message" = "Підписку '%@' буде видалено назавжди.";
+"subscriptions_empty_state" = "У вас ще немає активних підписок.\nНатисніть '+' щоб додати першу.";
+
+"pin_action" = "Закріпити";
+"unpin_action" = "Відкріпити";

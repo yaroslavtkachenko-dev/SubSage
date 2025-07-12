@@ -84,3 +84,10 @@
 
 "archived_empty_state" = "Your archive is empty";
 "unarchive_action" = "Unarchive";
+
+"delete_confirmation_title" = "Are you sure?";
+"delete_confirmation_message" = "Subscription '%@' will be permanently deleted.";
+"subscriptions_empty_state" = "You don't have any active subscriptions yet.\nTap '+' to add your first one.";
+
+"pin_action" = "Pin";
+"unpin_action" = "Unpin";

@@ -39,6 +39,22 @@ struct PersistenceController {
         example2.nextBilling = Calendar.current.date(byAdding: .day, value: 10, to: Date())
         example2.updatedAt = Date()
         
+        
+            let archivedExample = SubscriptionEntity(context: viewContext)
+            archivedExample.id = UUID()
+            archivedExample.name = "Archived Service"
+            archivedExample.price = 15.00
+            archivedExample.currency = "EUR"
+            archivedExample.billingCycle = "yearly"
+            archivedExample.category = "other"
+            archivedExample.iconName = "archivebox.circle.fill"
+            archivedExample.iconColor = "gray"
+            archivedExample.isActive = false // Головна відмінність
+            archivedExample.notificationOffset = -2
+            archivedExample.createdAt = Date()
+            archivedExample.nextBilling = Date()
+            archivedExample.updatedAt = Date()
+        
         do {
             try viewContext.save()
         } catch {
