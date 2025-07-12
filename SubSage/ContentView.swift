@@ -26,7 +26,6 @@ struct ContentView: View {
 // View, що відповідає за відображення списку активних підписок
 struct SubscriptionsListView: View {
     @Environment(\.managedObjectContext) private var viewContext
-
     @State private var subscriptions: [SubscriptionEntity] = []
     
     @State private var showingAddView = false
@@ -37,79 +36,77 @@ struct SubscriptionsListView: View {
 
     var body: some View {
         NavigationView {
-            
-            
-            // Перевіряємо, чи список порожній
-            if subscriptions.isEmpty && searchText.isEmpty {
-                VStack {
-                    Text("subscriptions_empty_state")
-                        .font(.title3)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding()
-                }
-                .navigationTitle("my_subscriptions")
-            } else {
-                List {
-                    ForEach(subscriptions) { subscriptionEntity in
-                        NavigationLink {
-                            EditSubscriptionView(subscription: subscriptionEntity)
-                        } label: {
-                            HStack {
-                                if subscriptionEntity.isPinned {
-                                    Image(systemName: "pin.fill")
-                                        .foregroundColor(.yellow)
-                                        .padding(.trailing, -10)
+            Group { // Групуємо вміст
+                if subscriptions.isEmpty && searchText.isEmpty {
+                    VStack {
+                        Text("subscriptions_empty_state")
+                            .font(.title3)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding()
+                    }
+                } else {
+                    List {
+                        ForEach(subscriptions) { subscriptionEntity in
+                            NavigationLink {
+                                EditSubscriptionView(subscription: subscriptionEntity)
+                            } label: {
+                                HStack {
+                                    if subscriptionEntity.isPinned {
+                                        Image(systemName: "pin.fill")
+                                            .foregroundColor(.yellow)
+                                            .padding(.trailing, -10)
+                                    }
+                                    SubscriptionCardView(subscription: subscriptionEntity.toSubscription())
                                 }
-                                SubscriptionCardView(subscription: subscriptionEntity.toSubscription())
                             }
-                        }
-                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                        .listRowSeparator(.hidden)
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button(role: .destructive) {
-                                subscriptionToDelete = subscriptionEntity
-                                showingDeleteConfirmation = true
-                            } label: {
-                                Label("delete", systemImage: "trash.fill")
+                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                            .listRowSeparator(.hidden)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button(role: .destructive) {
+                                    subscriptionToDelete = subscriptionEntity
+                                    showingDeleteConfirmation = true
+                                } label: {
+                                    Label("delete", systemImage: "trash.fill")
+                                }
+                                Button {
+                                    archiveSubscription(subscriptionEntity)
+                                } label: {
+                                    Label("archive_action", systemImage: "archivebox.fill")
+                                }
+                                .tint(.blue)
                             }
-                            Button {
-                                archiveSubscription(subscriptionEntity)
-                            } label: {
-                                Label("archive_action", systemImage: "archivebox.fill")
+                            .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                Button {
+                                    togglePin(for: subscriptionEntity)
+                                } label: {
+                                    Label(subscriptionEntity.isPinned ? "unpin_action" : "pin_action",
+                                          systemImage: subscriptionEntity.isPinned ? "pin.slash.fill" : "pin.fill")
+                                }
+                                .tint(.yellow)
                             }
-                            .tint(.blue)
-                        }
-                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                            Button {
-                                togglePin(for: subscriptionEntity)
-                            } label: {
-                                Label(subscriptionEntity.isPinned ? "unpin_action" : "pin_action",
-                                      systemImage: subscriptionEntity.isPinned ? "pin.slash.fill" : "pin.fill")
-                            }
-                            .tint(.yellow)
                         }
                     }
+                    .listStyle(.plain)
                 }
-                .listStyle(.plain)
-                .navigationTitle("my_subscriptions")
             }
-        }
-        .searchable(text: $searchText, prompt: Text("search_subscriptions_placeholder"))
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button { showingAddView = true } label: { Label("add_item_action", systemImage: "plus") }
+            .navigationTitle("my_subscriptions")
+            .searchable(text: $searchText, prompt: Text("search_subscriptions_placeholder"))
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button { showingAddView = true } label: { Label("add_item_action", systemImage: "plus") }
+                }
             }
-        }
-        .sheet(isPresented: $showingAddView) {
-            AddSubscriptionView().environment(\.managedObjectContext, self.viewContext)
-        }
-        .alert("delete_confirmation_title", isPresented: $showingDeleteConfirmation, presenting: subscriptionToDelete) { subscription in
-            Button("delete", role: .destructive) {
-                deleteSubscription(subscription)
+            .sheet(isPresented: $showingAddView) {
+                AddSubscriptionView().environment(\.managedObjectContext, self.viewContext)
             }
-        } message: { subscription in
-            Text(.init(String(format: NSLocalizedString("delete_confirmation_message", comment: ""), subscription.name ?? "N/A")))
+            .alert("delete_confirmation_title", isPresented: $showingDeleteConfirmation, presenting: subscriptionToDelete) { subscription in
+                Button("delete", role: .destructive) {
+                    deleteSubscription(subscription)
+                }
+            } message: { subscription in
+                Text(.init(String(format: NSLocalizedString("delete_confirmation_message", comment: ""), subscription.name ?? "N/A")))
+            }
         }
         .onAppear {
             fetchSubscriptions(with: searchText)
